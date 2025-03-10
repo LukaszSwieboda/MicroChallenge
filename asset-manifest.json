@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/MicroChallenge/static/css/main.2f558e33.css",
-    "main.js": "/MicroChallenge/static/js/main.673f5296.js",
+    "main.js": "/MicroChallenge/static/js/main.68f37f6f.js",
     "static/media/sciezka-gory.webp": "/MicroChallenge/static/media/sciezka-gory.c19ff3ea481568b659db.webp",
     "index.html": "/MicroChallenge/index.html",
     "main.2f558e33.css.map": "/MicroChallenge/static/css/main.2f558e33.css.map",
-    "main.673f5296.js.map": "/MicroChallenge/static/js/main.673f5296.js.map"
+    "main.68f37f6f.js.map": "/MicroChallenge/static/js/main.68f37f6f.js.map"
   },
   "entrypoints": [
     "static/css/main.2f558e33.css",
-    "static/js/main.673f5296.js"
+    "static/js/main.68f37f6f.js"
   ]
 }
