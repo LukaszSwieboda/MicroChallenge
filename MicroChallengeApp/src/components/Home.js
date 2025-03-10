@@ -5,7 +5,7 @@ import ChallengeList from './ChallengeList.js';
 const Home = () => {
     return (
       <div className="container">
-        <h1>Your Challenge List</h1>
+        <h1>Add Your Challenge</h1>
         <AddChallenge />
         <ChallengeList />
       </div>

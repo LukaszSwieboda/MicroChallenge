@@ -4,12 +4,13 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from "../components/Home.js"; 
 import DrawChallenge from '../components/DrawChallenge.js'; 
 import CompletedChallenges from '../components/CompletedChallenges.js'; 
-import AppStyles from '../styles/AppStyles.css'
+import AppStyles from '../styles/AppStyles.css';
 
 const App = () => {
   return (
-    <ChallengeProvider> {/* Zapewnia dostępność ChallengeContext w całej aplikacji */}
-      <Router>
+    <ChallengeProvider>
+      {/* Ustawienie basename na /MicroChallenge */}
+      <Router basename="/MicroChallenge">
         <nav>
           <ul>
             <li><Link to="/">Home</Link></li>
@@ -19,7 +20,7 @@ const App = () => {
         </nav>
 
         <Routes>
-          <Route path="/" element={<Home />} /> {/* Strona główna */}
+          <Route path="/" element={<Home />} />
           <Route path="/draw" element={<DrawChallenge />} />
           <Route path="/completed" element={<CompletedChallenges />} />
         </Routes>
