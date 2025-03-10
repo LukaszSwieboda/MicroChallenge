@@ -1,0 +1,160 @@
+/* Cała strona */
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  margin: 0;
+  background-color: #f4f4f4;
+  overflow: hidden; /* Zapobiega przewijaniu całego ekranu */
+  background-image: url('../images/sciezka-gory.webp'); /* Ścieżka do grafiki */
+  background-size: cover; /* Dopasowanie tła */
+  background-position: center; /* Wyrównanie tła */
+  background-attachment: fixed; /* Tło nie przewija się */
+  box-sizing: border-box; /* Umożliwia uwzględnienie paddingów w szerokości */
+}
+
+/* Kontener strony */
+.container {
+  text-align: center;
+  width: 100%; /* Zmieniamy na 100%, by elementy wewnątrz miały tę samą szerokość */
+  max-width: 600px; /* Zapewnia jednolitą szerokość dla kontenera */
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  margin-bottom: 20px;
+  max-height: 90vh;
+  overflow-y: auto; /* Pozwól na przewijanie w pionie */
+  box-sizing: border-box;
+}
+
+/* Styl formularza */
+input[type="text"] {
+  padding: 10px;
+  width: 80%;
+  margin: 10px 0;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+/* Styl przycisku */
+button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 10px 0;
+}
+
+/* Styl listy wyzwań */
+ul {
+  list-style: none;
+  padding: 0;
+  overflow-y: auto; /* Pozwól na przewijanie w pionie */
+  max-height: 300px; /* Ustaw stałą wysokość dla listy */
+  width: 100%; /* Zapewnia, że lista ma szerokość 100% */
+  box-sizing: border-box; /* Uwzględnia padding w obliczeniach szerokości i wysokości */
+  margin-top: 10px; /* Dodanie odstępu od góry */
+}
+
+li {
+  background-color: #f9f9f9;
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Przyciski do edytowania i usuwania */
+button:hover {
+  background-color: #45a049;
+}
+
+button:disabled {
+  background-color: #ccc;
+}
+
+/* Nawigacja */
+nav {
+  width: 100%; /* Ustawiamy szerokość na 100%, aby nawigacja była zgodna z kontenerem */
+  max-width: 600px; /* Szerokość nawigacji zgodna z kontenerem */
+  margin: 0 auto;
+  padding: 10px 20px;
+  background-color: #fff;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin-top: 20px;
+  box-sizing: border-box;
+}
+
+nav ul {
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+nav li {
+  display: inline-flex;
+}
+
+nav a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+nav a:hover {
+  color: #007bff;
+}
+
+/* Responsywność */
+@media (max-width: 600px) {
+  .add-challenge-form {
+    width: 90%;
+  }
+
+  nav ul {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  nav li {
+    margin-bottom: 10px;
+  }
+}
+
+/* Styl dla zakładki Draw Challenge */
+.draw-challenge {
+  background-color: white; /* Białe tło */
+  padding: 20px; /* Dodanie odstępu wewnętrznego */
+  border-radius: 8px; /* Zaokrąglenie rogów */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Dodanie cienia */
+  margin-top: 20px;
+  width: 100%; /* Ustawienie pełnej szerokości */
+  max-width: 600px; /* Tak jak w głównym kontenerze */
+  box-sizing: border-box;
+  overflow-y: auto; /* Pozwól na przewijanie w pionie w tym kontenerze */
+}
+
+/* Styl do zakładki Completed Challenges */
+.completed-challenges {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  width: 100%;
+  max-width: 600px;
+  box-sizing: border-box;
+  overflow-y: auto; /* Pozwól na przewijanie w pionie w tym kontenerze */
+}
