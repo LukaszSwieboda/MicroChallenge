@@ -13,6 +13,7 @@ Delete challenges: Users can delete challenges that are no longer needed.
 React – for building the user interface.
 React Router – for navigation between pages.
 React Hooks – for managing the app’s state.
+React Context - provides a way to pass data through the component tree.
 GitHub Pages – for hosting the app.
 
 **Planned Development**
