@@ -1,68 +1,68 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Micro Challenge App
+Micro Challenge is an app for creating and managing mini-challenges. Users can add their own challenges, randomly select them, and track which ones they've already completed. The app is designed to help users achieve small goals and challenges in their daily lives.
 
-## Available Scripts
+Features
+Add challenges: Users can add their own challenges to the list.
+Randomly select challenges: Ability to randomly pick one challenge for the day.
+Track completed challenges: Users can mark challenges as completed and track how many they have accomplished.
+Edit existing challenges: Users can edit the challenges they have already added.
+Delete challenges: Users can delete challenges that are no longer needed.
 
-In the project directory, you can run:
+Technologies
+React – for building the user interface.
+React Router – for navigation between pages.
+React Hooks – for managing the app’s state.
+GitHub Pages – for hosting the app.
 
-### `npm start`
+Planned Development
+The app will be developed further using the following technologies:
+Zustand – for advanced state management.
+React Query – for data management, such as synchronizing state with a server and handling API requests.
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Installation
+Clone the repository
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+To get started, clone the repository:
+git clone https://github.com/LukaszSwieboda/MicroChallenge.git
 
-### `npm test`
+Install dependencies
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+In the project’s root folder, run:
+npm install
 
-### `npm run build`
+Run the app locally
+After installing the dependencies, run the app on your local machine:
+npm start
+The app will be available at: http://localhost:3000/.
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Deploy to GitHub Pages
+To publish the app to GitHub Pages, follow these steps:
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+Install the gh-pages dependency:
+npm install gh-pages --save-dev
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Add the following scripts to your package.json:
+In the scripts section, add:
+"homepage": "https://YourUsername.github.io/MicroChallenge",
+"scripts": {
+"predeploy": "npm run build",
+"deploy": "gh-pages -d build",
+"start": "react-scripts start",
+"build": "react-scripts build",
+"test": "react-scripts test",
+"eject": "react-scripts eject"
+}
+Run the following command to deploy the app:
+npm run deploy
+Your app will be available at: https://YourUsername.github.io/MicroChallenge.
 
-### `npm run eject`
+How the app works?
+On the homepage (/), users can add new challenges to the list.
+On the Draw Challenge page (/draw), users can randomly select one challenge for the day.
+In the Completed Challenges section (/completed), users can see all the challenges they have already completed.
+The app allows editing existing challenges and deleting challenges.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+Future Extensions
+Expand the challenge addition feature to include thematic categories.
+Add a reward system for completed challenges.
+Time for challenge completion – the ability to set a time limit for each challenge.
