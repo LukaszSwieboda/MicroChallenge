@@ -1,10 +1,11 @@
 import React from "react";
 import { ChallengeProvider } from "../components/ChallengeContext.js"; 
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom';
 import Home from "../components/Home.js"; 
 import DrawChallenge from '../components/DrawChallenge.js'; 
 import CompletedChallenges from '../components/CompletedChallenges.js'; 
-import AppStyles from '../styles/AppStyles.css';
+import AIGenerator from '../components/AIGenerator.js';
+import '../styles/AppStyles.css';
 
 const App = () => {
   return (
@@ -13,14 +14,16 @@ const App = () => {
       <Router basename="/MicroChallenge">
         <nav>
           <ul>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/draw">Draw Challenge</Link></li>
-            <li><Link to="/completed">Completed Challenges</Link></li>
+            <li><NavLink to="/" end>Home</NavLink></li>
+            <li><NavLink to="/ai">AI Generator</NavLink></li>
+            <li><NavLink to="/draw">Draw</NavLink></li>
+            <li><NavLink to="/completed">Completed</NavLink></li>
           </ul>
         </nav>
 
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/ai" element={<AIGenerator />} />
           <Route path="/draw" element={<DrawChallenge />} />
           <Route path="/completed" element={<CompletedChallenges />} />
         </Routes>

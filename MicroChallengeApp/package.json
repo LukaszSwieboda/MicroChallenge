@@ -1,5 +1,5 @@
 {
-  "name": "projekt2",
+  "name": "micro-challenge-ai",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -17,9 +17,7 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
   },
-
   "homepage": "https://lukaszswieboda.github.io/MicroChallenge",
-
   "eslintConfig": {
     "extends": "react-app"
   },
