@@ -1,6 +1,6 @@
 import React, { useState, useContext, useRef } from "react";
-import { ChallengeContext } from "../components/ChallengeContext.js";
-import { CATEGORIES, DIFFICULTIES, DEFAULT_CATEGORY, DEFAULT_MINUTES } from "../constants.js";
+import { ChallengeContext } from "../components/ChallengeContext.jsx";
+import { CATEGORIES, DIFFICULTIES, TIME_COMMITMENTS, DEFAULT_CATEGORY, DEFAULT_TIME_COMMITMENT } from "../constants.js";
 import {
   generateChallengeSuggestions,
   isUsingRealAPI,
@@ -14,7 +14,7 @@ const AIGenerator = () => {
 
   const [goal, setGoal] = useState("");
   const [category, setCategory] = useState(DEFAULT_CATEGORY);
-  const [availableMinutes, setAvailableMinutes] = useState(DEFAULT_MINUTES);
+  const [timeCommitment, setTimeCommitment] = useState(DEFAULT_TIME_COMMITMENT);
   const [difficulty, setDifficulty] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -42,7 +42,7 @@ const AIGenerator = () => {
       const results = await generateChallengeSuggestions({
         goal: goal.trim(),
         category,
-        availableMinutes,
+        timeCommitment,
         difficulty: difficulty || undefined,
       });
       setSuggestions(results);
@@ -113,17 +113,12 @@ const AIGenerator = () => {
           </label>
 
           <label>
-            Time (min)
-            <input
-              type="number"
-              min="1"
-              max="120"
-              value={availableMinutes}
-              onChange={(e) => {
-                const val = Number(e.target.value);
-                setAvailableMinutes(Number.isFinite(val) ? Math.min(120, Math.max(1, val)) : DEFAULT_MINUTES);
-              }}
-            />
+            Time
+            <select value={timeCommitment} onChange={(e) => setTimeCommitment(e.target.value)}>
+              {TIME_COMMITMENTS.map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
           </label>
 
           <label>
@@ -153,7 +148,7 @@ const AIGenerator = () => {
                 <div>
                   <strong>{s.title}</strong>
                   <div style={{ fontSize: "0.85em", color: "#666", marginTop: "2px" }}>
-                    {s.category} · {s.difficulty} · {s.estimatedMinutes} min
+                    {s.category} · {s.difficulty} · {s.timeCommitment}
                   </div>
                 </div>
                 <button

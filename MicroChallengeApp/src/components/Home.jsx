@@ -1,6 +1,6 @@
 import React from 'react';
-import AddChallenge from './AddChallenge.js';  
-import ChallengeList from './ChallengeList.js'; 
+import AddChallenge from './AddChallenge.jsx';  
+import ChallengeList from './ChallengeList.jsx'; 
 
 const Home = () => {
     return (

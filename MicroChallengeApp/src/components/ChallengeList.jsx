@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { ChallengeContext } from "../components/ChallengeContext.js";
+import { ChallengeContext } from "../components/ChallengeContext.jsx";
 import { CATEGORIES } from "../constants.js";
 
 const ChallengeList = () => {
@@ -74,7 +74,7 @@ const ChallengeList = () => {
                   <div>
                     <strong>{challenge.title}</strong>
                     <div style={{ fontSize: "0.85em", color: "#666", marginTop: "2px" }}>
-                      {challenge.category} · {challenge.difficulty} · {challenge.estimatedMinutes} min
+                      {challenge.category} · {challenge.difficulty} · {challenge.timeCommitment}
                     </div>
                   </div>
                   <div style={{ display: "flex", gap: "5px", alignItems: "center" }}>

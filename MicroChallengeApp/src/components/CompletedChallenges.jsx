@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
-import { ChallengeContext } from "../components/ChallengeContext.js";
+import { ChallengeContext } from "../components/ChallengeContext.jsx";
 import { Link } from "react-router-dom";
-import ChallengeStats from "./ChallengeStats.js";
+import ChallengeStats from "./ChallengeStats.jsx";
 
 const CompletedChallenges = () => {
   const { completedChallenges } = useContext(ChallengeContext);
@@ -19,7 +19,7 @@ const CompletedChallenges = () => {
               <div>
                 <strong>{challenge.title}</strong>
                 <div style={{ fontSize: "0.85em", color: "#666", marginTop: "2px" }}>
-                  {challenge.category} · {challenge.difficulty} · {challenge.estimatedMinutes} min
+                  {challenge.category} · {challenge.difficulty} · {challenge.timeCommitment}
                 </div>
               </div>
             </li>

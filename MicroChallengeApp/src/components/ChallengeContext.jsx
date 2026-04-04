@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useRef } from "react";
-import { DEFAULT_CATEGORY, DEFAULT_DIFFICULTY, DEFAULT_MINUTES } from "../constants.js";
+import { DEFAULT_CATEGORY, DEFAULT_DIFFICULTY, DEFAULT_TIME_COMMITMENT, TIME_COMMITMENTS } from "../constants.js";
 
 export const ChallengeContext = createContext();
 
@@ -18,12 +18,24 @@ const generateId = () => {
   });
 };
 
+const migrateTimeCommitment = (ch) => {
+  if (ch.timeCommitment && TIME_COMMITMENTS.includes(ch.timeCommitment)) {
+    return ch.timeCommitment;
+  }
+  const mins = ch.estimatedMinutes;
+  if (typeof mins !== "number" || !Number.isFinite(mins)) return DEFAULT_TIME_COMMITMENT;
+  if (mins <= 30) return "Quick win";
+  if (mins <= 90) return "30–60 min";
+  if (mins <= 300) return "Half day";
+  return "Full day";
+};
+
 const migrateChallenge = (ch) => ({
   id: ch.id || generateId(),
   title: ch.title || ch.name || "Untitled",
   category: ch.category || DEFAULT_CATEGORY,
   difficulty: ch.difficulty || DEFAULT_DIFFICULTY,
-  estimatedMinutes: ch.estimatedMinutes ?? DEFAULT_MINUTES,
+  timeCommitment: migrateTimeCommitment(ch),
   done: ch.done ?? false,
   createdAt: ch.createdAt || new Date().toISOString(),
   ...(ch.completedAt ? { completedAt: ch.completedAt } : {}),
@@ -83,7 +95,7 @@ export const ChallengeProvider = ({ children }) => {
     isInitialMount.current = false;
   }, []);
 
-  const addChallenge = ({ title, category, difficulty, estimatedMinutes }) => {
+  const addChallenge = ({ title, category, difficulty, timeCommitment }) => {
     if (!title.trim()) return;
     setChallengeList((prev) => [
       ...prev,
@@ -92,7 +104,7 @@ export const ChallengeProvider = ({ children }) => {
         title: title.trim(),
         category: category || DEFAULT_CATEGORY,
         difficulty: difficulty || DEFAULT_DIFFICULTY,
-        estimatedMinutes: Number.isFinite(estimatedMinutes) ? Math.min(120, Math.max(1, estimatedMinutes)) : DEFAULT_MINUTES,
+        timeCommitment: TIME_COMMITMENTS.includes(timeCommitment) ? timeCommitment : DEFAULT_TIME_COMMITMENT,
         done: false,
         createdAt: new Date().toISOString(),
       },

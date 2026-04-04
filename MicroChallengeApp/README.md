@@ -19,6 +19,7 @@ This project was built to combine frontend development, state management, and pr
 
 - React 18 with Context API for state management
 - React Router 7 with client-side routing
+- Vite for build and development
 - Vanilla CSS (no UI framework)
 - GitHub Pages deployment via `gh-pages`
 - OpenAI API integration (optional, for real AI suggestions)
@@ -69,10 +70,10 @@ npm install
 ### Run Locally
 
 ```bash
-npm start
+npm run dev
 ```
 
-The app will be available at `http://localhost:3000`.
+The app will be available at `http://localhost:5173`.
 
 ### Production Build
 
@@ -112,13 +113,11 @@ src/
 
 ## Known Limitations
 
-- **GitHub Pages routing** — direct navigation to sub-routes (e.g. `/MicroChallenge/ai`) returns a 404 on hard refresh. This is a known limitation of `BrowserRouter` on static hosting. A `HashRouter` migration or a `404.html` SPA redirect would resolve this.
 - **Client-side only** — no backend, no user accounts. Data is per-browser via `localStorage`.
 - **API key exposure** — the OpenAI key is handled client-side. Acceptable for demos, not for production.
 
 ## Future Improvements
 
-- Add a `404.html` SPA fallback for GitHub Pages deep links
 - Add unit tests for `ChallengeContext` and streak calculation
 - Allow editing all challenge fields (category, difficulty, time), not just title
 - Prevent duplicate entries in completed challenges

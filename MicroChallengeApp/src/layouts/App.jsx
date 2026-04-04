@@ -1,10 +1,10 @@
 import React from "react";
-import { ChallengeProvider } from "../components/ChallengeContext.js"; 
+import { ChallengeProvider } from "../components/ChallengeContext.jsx"; 
 import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom';
-import Home from "../components/Home.js"; 
-import DrawChallenge from '../components/DrawChallenge.js'; 
-import CompletedChallenges from '../components/CompletedChallenges.js'; 
-import AIGenerator from '../components/AIGenerator.js';
+import Home from "../components/Home.jsx"; 
+import DrawChallenge from '../components/DrawChallenge.jsx'; 
+import CompletedChallenges from '../components/CompletedChallenges.jsx'; 
+import AIGenerator from '../components/AIGenerator.jsx';
 import '../styles/AppStyles.css';
 
 const App = () => {

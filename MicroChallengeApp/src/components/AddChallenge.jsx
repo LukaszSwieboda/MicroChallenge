@@ -1,13 +1,13 @@
 import React, { useState, useContext } from "react";
-import { ChallengeContext } from "../components/ChallengeContext.js";
-import { CATEGORIES, DIFFICULTIES, DEFAULT_CATEGORY, DEFAULT_DIFFICULTY, DEFAULT_MINUTES } from "../constants.js";
+import { ChallengeContext } from "../components/ChallengeContext.jsx";
+import { CATEGORIES, DIFFICULTIES, TIME_COMMITMENTS, DEFAULT_CATEGORY, DEFAULT_DIFFICULTY, DEFAULT_TIME_COMMITMENT } from "../constants.js";
 
 const AddChallenge = () => {
   const { addChallenge } = useContext(ChallengeContext);
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState(DEFAULT_CATEGORY);
   const [difficulty, setDifficulty] = useState(DEFAULT_DIFFICULTY);
-  const [estimatedMinutes, setEstimatedMinutes] = useState(DEFAULT_MINUTES);
+  const [timeCommitment, setTimeCommitment] = useState(DEFAULT_TIME_COMMITMENT);
   const [error, setError] = useState("");
 
   const handleSubmit = (e) => {
@@ -16,12 +16,11 @@ const AddChallenge = () => {
       setError("* Title can't be empty");
       return;
     }
-    const clampedMinutes = Math.min(120, Math.max(1, Number.isFinite(estimatedMinutes) ? estimatedMinutes : DEFAULT_MINUTES));
-    addChallenge({ title, category, difficulty, estimatedMinutes: clampedMinutes });
+    addChallenge({ title, category, difficulty, timeCommitment });
     setTitle("");
     setCategory(DEFAULT_CATEGORY);
     setDifficulty(DEFAULT_DIFFICULTY);
-    setEstimatedMinutes(DEFAULT_MINUTES);
+    setTimeCommitment(DEFAULT_TIME_COMMITMENT);
     setError("");
   };
 
@@ -55,17 +54,12 @@ const AddChallenge = () => {
         </label>
 
         <label>
-          Time (min)
-          <input
-            type="number"
-            min="1"
-            max="120"
-            value={estimatedMinutes}
-            onChange={(e) => {
-              const val = Number(e.target.value);
-              setEstimatedMinutes(Number.isFinite(val) ? Math.min(120, Math.max(1, val)) : DEFAULT_MINUTES);
-            }}
-          />
+          Time
+          <select value={timeCommitment} onChange={(e) => setTimeCommitment(e.target.value)}>
+            {TIME_COMMITMENTS.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
         </label>
       </div>
 

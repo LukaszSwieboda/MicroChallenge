@@ -1,63 +1,63 @@
-import { CATEGORIES, DIFFICULTIES } from "../constants.js";
+import { CATEGORIES, DIFFICULTIES, TIME_COMMITMENTS } from "../constants.js";
 
 const API_KEY_STORAGE = "mc_openai_key";
 
 const MOCK_TEMPLATES = {
   General: [
-    "Try something new for {minutes} minutes related to {goal}",
-    "Spend {minutes} minutes exploring {goal} from a different angle",
-    "Set a {minutes}-minute timer and focus entirely on {goal}",
-    "Write down 3 ideas about {goal} in under {minutes} minutes",
-    "Teach someone one thing about {goal} in {minutes} minutes",
+    "{time}: Try something new related to {goal}",
+    "{time}: Explore {goal} from a different angle",
+    "{time}: Focus entirely on {goal}",
+    "{time}: Write down 3 ideas about {goal}",
+    "{time}: Teach someone one thing about {goal}",
   ],
   Health: [
-    "Do a {minutes}-minute health routine focused on {goal}",
-    "Prepare a healthy snack inspired by {goal} in {minutes} minutes",
-    "Take a {minutes}-minute walk while thinking about {goal}",
-    "Drink water and stretch for {minutes} minutes with {goal} in mind",
-    "Log your {goal} habits for the next {minutes} minutes",
+    "{time}: Do a health routine focused on {goal}",
+    "{time}: Prepare a healthy snack inspired by {goal}",
+    "{time}: Take a walk while thinking about {goal}",
+    "{time}: Drink water and stretch with {goal} in mind",
+    "{time}: Log your {goal} habits",
   ],
   Fitness: [
-    "Complete a {minutes}-minute workout targeting {goal}",
-    "Do a {minutes}-minute stretching session for {goal}",
-    "Walk or jog for {minutes} minutes while focusing on {goal}",
-    "Try a new {minutes}-minute exercise that supports {goal}",
-    "Do {minutes} minutes of bodyweight exercises for {goal}",
+    "{time}: Complete a workout targeting {goal}",
+    "{time}: Do a stretching session for {goal}",
+    "{time}: Walk or jog while focusing on {goal}",
+    "{time}: Try a new exercise that supports {goal}",
+    "{time}: Do bodyweight exercises for {goal}",
   ],
   Learning: [
-    "Read about {goal} for {minutes} minutes",
-    "Watch a tutorial about {goal} — max {minutes} minutes",
-    "Write a summary of what you know about {goal} in {minutes} minutes",
-    "Find and bookmark 3 resources about {goal} in {minutes} minutes",
-    "Practice {goal} for {minutes} minutes using a new method",
+    "{time}: Read about {goal}",
+    "{time}: Watch a tutorial about {goal}",
+    "{time}: Write a summary of what you know about {goal}",
+    "{time}: Find and bookmark 3 resources about {goal}",
+    "{time}: Practice {goal} using a new method",
   ],
   Creativity: [
-    "Sketch or doodle something about {goal} for {minutes} minutes",
-    "Brainstorm 5 creative ideas for {goal} in {minutes} minutes",
-    "Write a short story or poem about {goal} in {minutes} minutes",
-    "Create a mood board for {goal} in under {minutes} minutes",
-    "Remix an existing idea about {goal} in {minutes} minutes",
+    "{time}: Sketch or doodle something about {goal}",
+    "{time}: Brainstorm 5 creative ideas for {goal}",
+    "{time}: Write a short story or poem about {goal}",
+    "{time}: Create a mood board for {goal}",
+    "{time}: Remix an existing idea about {goal}",
   ],
   Productivity: [
-    "Organize your workspace for {goal} in {minutes} minutes",
-    "Plan your next steps for {goal} in a {minutes}-minute session",
-    "Clear your inbox or task list related to {goal} in {minutes} minutes",
-    "Set 3 small goals for {goal} in under {minutes} minutes",
-    "Do a {minutes}-minute focus sprint on {goal}",
+    "{time}: Organize your workspace for {goal}",
+    "{time}: Plan your next steps for {goal}",
+    "{time}: Clear your inbox or task list related to {goal}",
+    "{time}: Set 3 small goals for {goal}",
+    "{time}: Do a focus sprint on {goal}",
   ],
   Social: [
-    "Reach out to someone about {goal} — spend {minutes} minutes",
-    "Have a {minutes}-minute conversation about {goal}",
-    "Write a message to a friend about {goal} in {minutes} minutes",
-    "Share something you learned about {goal} in {minutes} minutes",
-    "Help someone with {goal} for {minutes} minutes",
+    "{time}: Reach out to someone about {goal}",
+    "{time}: Have a conversation about {goal}",
+    "{time}: Write a message to a friend about {goal}",
+    "{time}: Share something you learned about {goal}",
+    "{time}: Help someone with {goal}",
   ],
   Mindfulness: [
-    "Meditate on {goal} for {minutes} minutes",
-    "Journal about {goal} for {minutes} minutes",
-    "Do a {minutes}-minute breathing exercise with {goal} as intention",
-    "Take a {minutes}-minute mindful break focused on {goal}",
-    "Reflect on your progress with {goal} for {minutes} minutes",
+    "{time}: Meditate on {goal}",
+    "{time}: Journal about {goal}",
+    "{time}: Do a breathing exercise with {goal} as intention",
+    "{time}: Take a mindful break focused on {goal}",
+    "{time}: Reflect on your progress with {goal}",
   ],
 };
 
@@ -66,34 +66,34 @@ const pickRandom = (arr, count) => {
   return shuffled.slice(0, count);
 };
 
-const generateMock = ({ goal, category, availableMinutes, difficulty }) => {
+const generateMock = ({ goal, category, timeCommitment, difficulty }) => {
   const templates = MOCK_TEMPLATES[category] || MOCK_TEMPLATES.General;
   const picked = pickRandom(templates, 3);
 
   return picked.map((template) => ({
     title: template
       .replace("{goal}", goal)
-      .replace(/{minutes}/g, String(availableMinutes)),
+      .replace("{time}", timeCommitment),
     category,
     difficulty: difficulty || DIFFICULTIES[Math.floor(Math.random() * DIFFICULTIES.length)],
-    estimatedMinutes: availableMinutes,
+    timeCommitment,
   }));
 };
 
-const buildPrompt = ({ goal, category, availableMinutes, difficulty }) => {
+const buildPrompt = ({ goal, category, timeCommitment, difficulty }) => {
   const difficultyPart = difficulty ? ` at ${difficulty} difficulty` : "";
   return `Generate exactly 3 micro challenge suggestions.
 
 Context:
 - Goal: ${goal}
 - Category: ${category}
-- Available time: ${availableMinutes} minutes${difficultyPart}
+- Time commitment: ${timeCommitment}${difficultyPart}
 
 Return ONLY a JSON array with 3 objects, each with these fields:
 - "title": short actionable challenge title (max 80 chars)
 - "category": "${category}"
 - "difficulty": one of ${JSON.stringify(DIFFICULTIES)}
-- "estimatedMinutes": number between 1 and ${availableMinutes}
+- "timeCommitment": one of ${JSON.stringify(TIME_COMMITMENTS)}
 
 No markdown, no explanation, just the JSON array.`;
 };
@@ -114,16 +114,14 @@ const parseAIResponse = (text, params) => {
     throw new Error("Invalid response format");
   }
 
-  const maxMinutes = params.availableMinutes || 120;
   const fallbackDifficulty = params.difficulty || "Easy";
+  const forcedTime = params.timeCommitment || TIME_COMMITMENTS[0];
 
   return parsed.slice(0, 3).map((item) => ({
     title: String(item.title || "Untitled").slice(0, 120),
     category: CATEGORIES.includes(item.category) ? item.category : params.category,
     difficulty: normalizeDifficulty(item.difficulty, fallbackDifficulty),
-    estimatedMinutes: Number.isFinite(item.estimatedMinutes)
-      ? Math.min(maxMinutes, Math.max(1, item.estimatedMinutes))
-      : maxMinutes,
+    timeCommitment: forcedTime,
   }));
 };
 

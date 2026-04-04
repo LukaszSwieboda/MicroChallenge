@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { ChallengeContext } from "../components/ChallengeContext.js";
+import { ChallengeContext } from "../components/ChallengeContext.jsx";
 import { Link } from "react-router-dom";
 
 const DrawChallenge = () => {
@@ -17,7 +17,7 @@ const DrawChallenge = () => {
         <div style={{ margin: "10px 0" }}>
           <p><strong>{selectedChallenge.title}</strong></p>
           <p style={{ fontSize: "0.9em", color: "#555" }}>
-            {selectedChallenge.category} · {selectedChallenge.difficulty} · {selectedChallenge.estimatedMinutes} min
+            {selectedChallenge.category} · {selectedChallenge.difficulty} · {selectedChallenge.timeCommitment}
           </p>
         </div>
       ) : (

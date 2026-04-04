@@ -1,5 +1,5 @@
 import React, { useContext, useMemo } from "react";
-import { ChallengeContext } from "../components/ChallengeContext.js";
+import { ChallengeContext } from "../components/ChallengeContext.jsx";
 import { DIFFICULTIES } from "../constants.js";
 
 const toLocalDateKey = (iso) => {
