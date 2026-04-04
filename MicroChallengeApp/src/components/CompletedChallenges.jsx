@@ -1,35 +1,32 @@
 import React, { useContext } from "react";
 import { ChallengeContext } from "../components/ChallengeContext.jsx";
-import { Link } from "react-router-dom";
+import { Stack, Title, Text, Paper, Badge, Group } from "@mantine/core";
 import ChallengeStats from "./ChallengeStats.jsx";
 
 const CompletedChallenges = () => {
   const { completedChallenges } = useContext(ChallengeContext);
 
   return (
-    <div className="completed-challenges">
-      <h2>Completed Challenges</h2>
+    <Stack gap="lg">
+      <Title order={2}>Completed Challenges</Title>
       <ChallengeStats />
       {completedChallenges.length === 0 ? (
-        <p>No challenges completed yet.</p>
+        <Text c="dimmed">No challenges completed yet.</Text>
       ) : (
-        <ul>
+        <Stack gap="xs">
           {completedChallenges.map((challenge) => (
-            <li key={challenge.id}>
-              <div>
-                <strong>{challenge.title}</strong>
-                <div style={{ fontSize: "0.85em", color: "#666", marginTop: "2px" }}>
-                  {challenge.category} · {challenge.difficulty} · {challenge.timeCommitment}
-                </div>
-              </div>
-            </li>
+            <Paper key={challenge.id} shadow="xs" p="sm" withBorder>
+              <Text fw={600} size="sm">{challenge.title}</Text>
+              <Group gap={6} mt={2}>
+                <Badge size="xs" variant="light">{challenge.category}</Badge>
+                <Badge size="xs" variant="light" color="orange">{challenge.difficulty}</Badge>
+                <Badge size="xs" variant="light" color="gray">{challenge.timeCommitment}</Badge>
+              </Group>
+            </Paper>
           ))}
-        </ul>
+        </Stack>
       )}
-
-      <br />
-      <Link to="/">Back to Home</Link>
-    </div>
+    </Stack>
   );
 };
 

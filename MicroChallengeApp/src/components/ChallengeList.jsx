@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { ChallengeContext } from "../components/ChallengeContext.jsx";
 import { CATEGORIES } from "../constants.js";
+import { Paper, Group, Text, Badge, Button, TextInput, Select, Stack, Title } from "@mantine/core";
 
 const ChallengeList = () => {
   const { challengeList, editChallenge, deleteChallenge } = useContext(ChallengeContext);
@@ -26,68 +27,64 @@ const ChallengeList = () => {
 
   if (challengeList.length === 0) {
     return (
-      <div>
-        <p style={{ color: "#888", fontStyle: "italic", marginTop: "20px" }}>
-          No challenges yet. Add one above!
-        </p>
-      </div>
+      <Text c="dimmed" fs="italic" mt="md">
+        No challenges yet. Add one above!
+      </Text>
     );
   }
 
   return (
-    <div>
-      <div className="list-header">
-        <p>List of challenges ({filteredList.length}):</p>
-        <select
+    <Stack gap="sm">
+      <Group justify="space-between" align="center">
+        <Title order={4}>Challenges ({filteredList.length})</Title>
+        <Select
+          size="xs"
+          data={["All", ...CATEGORIES]}
           value={filterCategory}
-          onChange={(e) => setFilterCategory(e.target.value)}
-        >
-          <option value="All">All categories</option>
-          {CATEGORIES.map((cat) => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
-        </select>
-      </div>
+          onChange={(val) => setFilterCategory(val || "All")}
+          allowDeselect={false}
+          w={160}
+        />
+      </Group>
 
       {filteredList.length === 0 ? (
-        <p style={{ color: "#888", fontStyle: "italic" }}>
-          No challenges in this category.
-        </p>
+        <Text c="dimmed" fs="italic">No challenges in this category.</Text>
       ) : (
-        <ul>
+        <Stack gap="xs">
           {filteredList.map((challenge) => (
-            <li key={challenge.id}>
+            <Paper key={challenge.id} shadow="xs" p="sm" withBorder>
               {editingId === challenge.id ? (
-                <>
-                  <input
-                    type="text"
+                <Group>
+                  <TextInput
                     value={editedTitle}
-                    onChange={(e) => setEditedTitle(e.target.value)}
+                    onChange={(e) => setEditedTitle(e.currentTarget.value)}
+                    style={{ flex: 1 }}
+                    size="sm"
                   />
-                  <div style={{ display: "flex", gap: "5px" }}>
-                    <button onClick={() => handleSaveEdit(challenge.id)}>Save</button>
-                    <button onClick={() => setEditingId(null)}>Cancel</button>
-                  </div>
-                </>
+                  <Button size="xs" onClick={() => handleSaveEdit(challenge.id)}>Save</Button>
+                  <Button size="xs" variant="default" onClick={() => setEditingId(null)}>Cancel</Button>
+                </Group>
               ) : (
-                <>
+                <Group justify="space-between" wrap="nowrap">
                   <div>
-                    <strong>{challenge.title}</strong>
-                    <div style={{ fontSize: "0.85em", color: "#666", marginTop: "2px" }}>
-                      {challenge.category} · {challenge.difficulty} · {challenge.timeCommitment}
-                    </div>
+                    <Text fw={600} size="sm">{challenge.title}</Text>
+                    <Group gap={6} mt={2}>
+                      <Badge size="xs" variant="light">{challenge.category}</Badge>
+                      <Badge size="xs" variant="light" color="orange">{challenge.difficulty}</Badge>
+                      <Badge size="xs" variant="light" color="gray">{challenge.timeCommitment}</Badge>
+                    </Group>
                   </div>
-                  <div style={{ display: "flex", gap: "5px", alignItems: "center" }}>
-                    <button onClick={() => handleEditClick(challenge.id, challenge.title)}>Edit</button>
-                    <button onClick={() => deleteChallenge(challenge.id)}>Delete</button>
-                  </div>
-                </>
+                  <Group gap={4} wrap="nowrap">
+                    <Button size="xs" variant="light" onClick={() => handleEditClick(challenge.id, challenge.title)}>Edit</Button>
+                    <Button size="xs" variant="light" color="red" onClick={() => deleteChallenge(challenge.id)}>Delete</Button>
+                  </Group>
+                </Group>
               )}
-            </li>
+            </Paper>
           ))}
-        </ul>
+        </Stack>
       )}
-    </div>
+    </Stack>
   );
 };
 

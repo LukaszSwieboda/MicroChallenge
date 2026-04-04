@@ -7,7 +7,7 @@ import {
   getApiKey,
   setApiKey,
 } from "../services/aiService.js";
-import { Link } from "react-router-dom";
+import { Stack, Title, Paper, TextInput, PasswordInput, Select, Button, Group, Text, Badge, Alert } from "@mantine/core";
 
 const AIGenerator = () => {
   const { addChallenge } = useContext(ChallengeContext);
@@ -66,113 +66,116 @@ const AIGenerator = () => {
   };
 
   return (
-    <div className="ai-generator">
-      <h2>AI Challenge Generator</h2>
-
-      <div className="ai-mode-badge">
-        {isUsingRealAPI() ? "OpenAI API" : "Demo Mode"}
-        <button
-          type="button"
-          className="ai-key-toggle"
-          onClick={() => setShowKeyInput(!showKeyInput)}
-        >
-          {showKeyInput ? "Hide" : "API Key"}
-        </button>
-      </div>
+    <Stack gap="lg">
+      <Group justify="space-between" align="center">
+        <Title order={2}>AI Challenge Generator</Title>
+        <Group gap="xs">
+          <Badge variant="light" color={isUsingRealAPI() ? "green" : "gray"}>
+            {isUsingRealAPI() ? "OpenAI API" : "Demo Mode"}
+          </Badge>
+          <Button
+            size="xs"
+            variant="default"
+            onClick={() => setShowKeyInput(!showKeyInput)}
+          >
+            {showKeyInput ? "Hide" : "API Key"}
+          </Button>
+        </Group>
+      </Group>
 
       {showKeyInput && (
-        <div className="ai-key-section">
-          <input
-            type="password"
-            placeholder="sk-..."
-            value={apiKeyDraft}
-            onChange={(e) => setApiKeyDraft(e.target.value)}
-          />
-          <button type="button" onClick={handleSaveKey}>
-            {apiKeyDraft.trim() ? "Save Key" : "Clear Key"}
-          </button>
-        </div>
+        <Paper shadow="xs" p="sm" withBorder>
+          <Group>
+            <PasswordInput
+              placeholder="sk-..."
+              value={apiKeyDraft}
+              onChange={(e) => setApiKeyDraft(e.currentTarget.value)}
+              style={{ flex: 1 }}
+              size="sm"
+            />
+            <Button size="sm" onClick={handleSaveKey}>
+              {apiKeyDraft.trim() ? "Save Key" : "Clear Key"}
+            </Button>
+          </Group>
+        </Paper>
       )}
 
-      <form onSubmit={handleGenerate}>
-        <input
-          type="text"
-          placeholder="What's your goal? (e.g. improve focus, learn guitar)"
-          value={goal}
-          onChange={(e) => setGoal(e.target.value)}
-        />
+      <Paper shadow="xs" p="md" withBorder>
+        <form onSubmit={handleGenerate}>
+          <TextInput
+            placeholder="What's your goal? (e.g. improve focus, learn guitar)"
+            value={goal}
+            onChange={(e) => setGoal(e.currentTarget.value)}
+            mb="sm"
+          />
 
-        <div className="form-row">
-          <label>
-            Category
-            <select value={category} onChange={(e) => setCategory(e.target.value)}>
-              {CATEGORIES.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
-          </label>
+          <Group grow mb="sm">
+            <Select
+              label="Category"
+              data={CATEGORIES}
+              value={category}
+              onChange={(val) => setCategory(val || DEFAULT_CATEGORY)}
+              allowDeselect={false}
+            />
+            <Select
+              label="Time"
+              data={TIME_COMMITMENTS}
+              value={timeCommitment}
+              onChange={(val) => setTimeCommitment(val || DEFAULT_TIME_COMMITMENT)}
+              allowDeselect={false}
+            />
+            <Select
+              label="Difficulty"
+              data={[{ value: "", label: "Any" }, ...DIFFICULTIES.map((d) => ({ value: d, label: d }))]}
+              value={difficulty}
+              onChange={(val) => setDifficulty(val || "")}
+              allowDeselect={false}
+            />
+          </Group>
 
-          <label>
-            Time
-            <select value={timeCommitment} onChange={(e) => setTimeCommitment(e.target.value)}>
-              {TIME_COMMITMENTS.map((t) => (
-                <option key={t} value={t}>{t}</option>
-              ))}
-            </select>
-          </label>
+          <Button type="submit" loading={loading} fullWidth>
+            Generate Suggestions
+          </Button>
+        </form>
+      </Paper>
 
-          <label>
-            Difficulty
-            <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
-              <option value="">Any</option>
-              {DIFFICULTIES.map((d) => (
-                <option key={d} value={d}>{d}</option>
-              ))}
-            </select>
-          </label>
-        </div>
-
-        <button type="submit" disabled={loading}>
-          {loading ? "Generating..." : "Generate Suggestions"}
-        </button>
-      </form>
-
-      {error && <p className="ai-error">{error}</p>}
+      {error && <Alert color="red" variant="light">{error}</Alert>}
 
       {suggestions.length > 0 && (
-        <div className="ai-suggestions">
-          <h3>Suggestions</h3>
-          <ul>
-            {suggestions.map((s, i) => (
-              <li key={i} className="ai-suggestion-item">
+        <Stack gap="xs">
+          <Title order={4}>Suggestions</Title>
+          {suggestions.map((s, i) => (
+            <Paper key={i} shadow="xs" p="sm" withBorder>
+              <Group justify="space-between" wrap="nowrap">
                 <div>
-                  <strong>{s.title}</strong>
-                  <div style={{ fontSize: "0.85em", color: "#666", marginTop: "2px" }}>
-                    {s.category} · {s.difficulty} · {s.timeCommitment}
-                  </div>
+                  <Text fw={600} size="sm">{s.title}</Text>
+                  <Group gap={6} mt={2}>
+                    <Badge size="xs" variant="light">{s.category}</Badge>
+                    <Badge size="xs" variant="light" color="orange">{s.difficulty}</Badge>
+                    <Badge size="xs" variant="light" color="gray">{s.timeCommitment}</Badge>
+                  </Group>
                 </div>
-                <button
-                  type="button"
+                <Button
+                  size="xs"
+                  variant={savedIndexes.has(i) ? "default" : "light"}
+                  color={savedIndexes.has(i) ? "gray" : "green"}
                   onClick={() => handleSave(s, i)}
                   disabled={savedIndexes.has(i)}
                 >
                   {savedIndexes.has(i) ? "Saved" : "Save"}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
+                </Button>
+              </Group>
+            </Paper>
+          ))}
+        </Stack>
       )}
 
       {!loading && suggestions.length === 0 && !error && (
-        <p style={{ color: "#888", fontStyle: "italic", marginTop: "16px" }}>
+        <Text c="dimmed" fs="italic" ta="center">
           Describe your goal and generate AI-powered challenge ideas.
-        </p>
+        </Text>
       )}
-
-      <br />
-      <Link to="/">Back to Home</Link>
-    </div>
+    </Stack>
   );
 };
 

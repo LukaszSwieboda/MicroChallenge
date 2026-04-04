@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { ChallengeContext } from "../components/ChallengeContext.jsx";
 import { CATEGORIES, DIFFICULTIES, TIME_COMMITMENTS, DEFAULT_CATEGORY, DEFAULT_DIFFICULTY, DEFAULT_TIME_COMMITMENT } from "../constants.js";
+import { TextInput, Select, Button, Group, Paper, Alert } from "@mantine/core";
 
 const AddChallenge = () => {
   const { addChallenge } = useContext(ChallengeContext);
@@ -13,7 +14,7 @@ const AddChallenge = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) {
-      setError("* Title can't be empty");
+      setError("Title can't be empty");
       return;
     }
     addChallenge({ title, category, difficulty, timeCommitment });
@@ -25,46 +26,43 @@ const AddChallenge = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="Enter challenge title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      {error && <p style={{ color: "red" }}>{error}</p>}
+    <Paper shadow="xs" p="md" withBorder>
+      <form onSubmit={handleSubmit}>
+        <TextInput
+          placeholder="Enter challenge title"
+          value={title}
+          onChange={(e) => setTitle(e.currentTarget.value)}
+          error={error || undefined}
+          mb="sm"
+        />
 
-      <div className="form-row">
-        <label>
-          Category
-          <select value={category} onChange={(e) => setCategory(e.target.value)}>
-            {CATEGORIES.map((cat) => (
-              <option key={cat} value={cat}>{cat}</option>
-            ))}
-          </select>
-        </label>
+        <Group grow mb="sm">
+          <Select
+            label="Category"
+            data={CATEGORIES}
+            value={category}
+            onChange={(val) => setCategory(val || DEFAULT_CATEGORY)}
+            allowDeselect={false}
+          />
+          <Select
+            label="Difficulty"
+            data={DIFFICULTIES}
+            value={difficulty}
+            onChange={(val) => setDifficulty(val || DEFAULT_DIFFICULTY)}
+            allowDeselect={false}
+          />
+          <Select
+            label="Time"
+            data={TIME_COMMITMENTS}
+            value={timeCommitment}
+            onChange={(val) => setTimeCommitment(val || DEFAULT_TIME_COMMITMENT)}
+            allowDeselect={false}
+          />
+        </Group>
 
-        <label>
-          Difficulty
-          <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
-            {DIFFICULTIES.map((d) => (
-              <option key={d} value={d}>{d}</option>
-            ))}
-          </select>
-        </label>
-
-        <label>
-          Time
-          <select value={timeCommitment} onChange={(e) => setTimeCommitment(e.target.value)}>
-            {TIME_COMMITMENTS.map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </select>
-        </label>
-      </div>
-
-      <button type="submit">Add Challenge</button>
-    </form>
+        <Button type="submit" fullWidth>Add Challenge</Button>
+      </form>
+    </Paper>
   );
 };
 

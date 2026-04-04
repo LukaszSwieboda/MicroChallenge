@@ -1,6 +1,7 @@
 import React, { useContext, useMemo } from "react";
 import { ChallengeContext } from "../components/ChallengeContext.jsx";
 import { DIFFICULTIES } from "../constants.js";
+import { SimpleGrid, Paper, Text, Badge, Group } from "@mantine/core";
 
 const toLocalDateKey = (iso) => {
   try {
@@ -81,34 +82,34 @@ const ChallengeStats = () => {
   if (stats.total === 0) return null;
 
   return (
-    <div className="stats-section">
-      <h3>Your Progress</h3>
-      <div className="stats-grid">
-        <div className="stat-item">
-          <span className="stat-value">{stats.total}</span>
-          <span className="stat-label">Completed</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-value">{stats.rate}%</span>
-          <span className="stat-label">Completion Rate</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-value">{stats.streak}</span>
-          <span className="stat-label">Day Streak</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-value">{stats.favoriteCategory}</span>
-          <span className="stat-label">Top Category</span>
-        </div>
-      </div>
-      <div className="difficulty-breakdown">
+    <Paper shadow="xs" p="md" withBorder bg="teal.0" mb="md">
+      <Text fw={600} mb="sm" ta="center">Your Progress</Text>
+      <SimpleGrid cols={{ base: 2, sm: 4 }} mb="sm">
+        <Paper p="xs" ta="center" radius="md">
+          <Text fw={700} size="xl" c="teal">{stats.total}</Text>
+          <Text size="xs" c="dimmed">Completed</Text>
+        </Paper>
+        <Paper p="xs" ta="center" radius="md">
+          <Text fw={700} size="xl" c="teal">{stats.rate}%</Text>
+          <Text size="xs" c="dimmed">Rate</Text>
+        </Paper>
+        <Paper p="xs" ta="center" radius="md">
+          <Text fw={700} size="xl" c="teal">{stats.streak}</Text>
+          <Text size="xs" c="dimmed">Day Streak</Text>
+        </Paper>
+        <Paper p="xs" ta="center" radius="md">
+          <Text fw={700} size="xl" c="teal">{stats.favoriteCategory}</Text>
+          <Text size="xs" c="dimmed">Top Category</Text>
+        </Paper>
+      </SimpleGrid>
+      <Group justify="center" gap="xs">
         {DIFFICULTIES.map((d) => (
-          <span key={d} className="difficulty-tag">
+          <Badge key={d} variant="light" color="gray">
             {d}: {stats.difficultyBreakdown[d]}
-          </span>
+          </Badge>
         ))}
-      </div>
-    </div>
+      </Group>
+    </Paper>
   );
 };
 

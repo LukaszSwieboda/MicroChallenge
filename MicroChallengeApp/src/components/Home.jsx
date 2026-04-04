@@ -1,15 +1,16 @@
-import React from 'react';
-import AddChallenge from './AddChallenge.jsx';  
-import ChallengeList from './ChallengeList.jsx'; 
+import React from "react";
+import { Title, Stack } from "@mantine/core";
+import AddChallenge from "./AddChallenge.jsx";
+import ChallengeList from "./ChallengeList.jsx";
 
 const Home = () => {
-    return (
-      <div className="container">
-        <h1>Add Your Challenge</h1>
-        <AddChallenge />
-        <ChallengeList />
-      </div>
-    );
-  };
-  
-  export default Home;
+  return (
+    <Stack gap="lg">
+      <Title order={2}>Add Your Challenge</Title>
+      <AddChallenge />
+      <ChallengeList />
+    </Stack>
+  );
+};
+
+export default Home;
