@@ -1,5 +1,5 @@
 import React, { useState, useContext, useRef } from "react";
-import { ChallengeContext } from "../components/ChallengeContext.jsx";
+import { ChallengeContext, calculatePoints } from "../components/ChallengeContext.jsx";
 import { CATEGORIES, DIFFICULTIES, TIME_COMMITMENTS, DEFAULT_CATEGORY, DEFAULT_TIME_COMMITMENT } from "../constants.js";
 import {
   generateChallengeSuggestions,
@@ -153,6 +153,7 @@ const AIGenerator = () => {
                     <Badge size="xs" variant="light">{s.category}</Badge>
                     <Badge size="xs" variant="light" color="orange">{s.difficulty}</Badge>
                     <Badge size="xs" variant="light" color="gray">{s.timeCommitment}</Badge>
+                    <Badge size="xs" variant="filled" color="teal">{calculatePoints(s.difficulty, s.timeCommitment)} pts</Badge>
                   </Group>
                 </div>
                 <Button

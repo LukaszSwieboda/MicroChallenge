@@ -3,7 +3,7 @@ import { ChallengeContext } from "../components/ChallengeContext.jsx";
 import { Paper, Title, Text, Button, Badge, Group, Stack, Alert } from "@mantine/core";
 
 const DrawChallenge = () => {
-  const { selectedChallenge, drawMessage, drawNewChallenge, markChallengeAsCompleted } =
+  const { selectedChallenge, drawMessage, drawNewChallenge, startChallenge, markChallengeAsCompleted } =
     useContext(ChallengeContext);
 
   return (
@@ -26,20 +26,23 @@ const DrawChallenge = () => {
               <Badge variant="light">{selectedChallenge.category}</Badge>
               <Badge variant="light" color="orange">{selectedChallenge.difficulty}</Badge>
               <Badge variant="light" color="gray">{selectedChallenge.timeCommitment}</Badge>
+              <Badge variant="filled" color="teal">{selectedChallenge.points} pts</Badge>
             </Group>
           </Paper>
         ) : (
           <Text c="dimmed">No challenge drawn yet</Text>
         )}
 
-        <Button
-          onClick={markChallengeAsCompleted}
-          disabled={!selectedChallenge}
-          color="green"
-          mt="md"
-        >
-          Mark as Completed
-        </Button>
+        {selectedChallenge && selectedChallenge.status === "planned" && (
+          <Button color="blue" mt="md" onClick={() => startChallenge(selectedChallenge.id)}>
+            Start Challenge
+          </Button>
+        )}
+        {selectedChallenge && selectedChallenge.status === "in_progress" && (
+          <Button color="green" mt="md" onClick={() => markChallengeAsCompleted(selectedChallenge.id)}>
+            Mark as Completed
+          </Button>
+        )}
       </Paper>
     </Stack>
   );

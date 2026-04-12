@@ -51,6 +51,8 @@ const ChallengeStats = () => {
 
     const rate = all > 0 ? Math.round((total / all) * 100) : 0;
 
+    const totalPoints = completedChallenges.reduce((sum, ch) => sum + (ch.points || 0), 0);
+
     const categoryCounts = {};
     for (const ch of completedChallenges) {
       categoryCounts[ch.category] = (categoryCounts[ch.category] || 0) + 1;
@@ -76,7 +78,7 @@ const ChallengeStats = () => {
 
     const streak = computeStreak(completedChallenges);
 
-    return { total, rate, favoriteCategory, difficultyBreakdown, streak };
+    return { total, rate, totalPoints, favoriteCategory, difficultyBreakdown, streak };
   }, [challengeList, completedChallenges]);
 
   if (stats.total === 0) return null;
@@ -84,10 +86,14 @@ const ChallengeStats = () => {
   return (
     <Paper shadow="xs" p="md" withBorder bg="teal.0" mb="md">
       <Text fw={600} mb="sm" ta="center">Your Progress</Text>
-      <SimpleGrid cols={{ base: 2, sm: 4 }} mb="sm">
+      <SimpleGrid cols={{ base: 2, sm: 5 }} mb="sm">
         <Paper p="xs" ta="center" radius="md">
           <Text fw={700} size="xl" c="teal">{stats.total}</Text>
           <Text size="xs" c="dimmed">Completed</Text>
+        </Paper>
+        <Paper p="xs" ta="center" radius="md">
+          <Text fw={700} size="xl" c="teal">{stats.totalPoints}</Text>
+          <Text size="xs" c="dimmed">Points</Text>
         </Paper>
         <Paper p="xs" ta="center" radius="md">
           <Text fw={700} size="xl" c="teal">{stats.rate}%</Text>

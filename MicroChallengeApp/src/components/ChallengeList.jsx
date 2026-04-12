@@ -3,8 +3,11 @@ import { ChallengeContext } from "../components/ChallengeContext.jsx";
 import { CATEGORIES } from "../constants.js";
 import { Paper, Group, Text, Badge, Button, TextInput, Select, Stack, Title } from "@mantine/core";
 
+const STATUS_COLORS = { planned: "blue", in_progress: "yellow", completed: "green" };
+const STATUS_LABELS = { planned: "Planned", in_progress: "In Progress", completed: "Completed" };
+
 const ChallengeList = () => {
-  const { challengeList, editChallenge, deleteChallenge } = useContext(ChallengeContext);
+  const { challengeList, editChallenge, deleteChallenge, startChallenge, markChallengeAsCompleted } = useContext(ChallengeContext);
   const [editingId, setEditingId] = useState(null);
   const [editedTitle, setEditedTitle] = useState("");
   const [filterCategory, setFilterCategory] = useState("All");
@@ -26,11 +29,7 @@ const ChallengeList = () => {
   };
 
   if (challengeList.length === 0) {
-    return (
-      <Text c="dimmed" fs="italic" mt="md">
-        No challenges yet. Add one above!
-      </Text>
-    );
+    return null;
   }
 
   return (
@@ -67,14 +66,26 @@ const ChallengeList = () => {
               ) : (
                 <Group justify="space-between" wrap="nowrap">
                   <div>
-                    <Text fw={600} size="sm">{challenge.title}</Text>
-                    <Group gap={6} mt={2}>
+                    <Group gap={6} mb={2}>
+                      <Text fw={600} size="sm">{challenge.title}</Text>
+                      <Badge size="xs" color={STATUS_COLORS[challenge.status] || "gray"}>
+                        {STATUS_LABELS[challenge.status] || challenge.status}
+                      </Badge>
+                    </Group>
+                    <Group gap={6}>
                       <Badge size="xs" variant="light">{challenge.category}</Badge>
                       <Badge size="xs" variant="light" color="orange">{challenge.difficulty}</Badge>
                       <Badge size="xs" variant="light" color="gray">{challenge.timeCommitment}</Badge>
+                      <Badge size="xs" variant="filled" color="teal">{challenge.points} pts</Badge>
                     </Group>
                   </div>
                   <Group gap={4} wrap="nowrap">
+                    {challenge.status === "planned" && (
+                      <Button size="xs" variant="light" color="blue" onClick={() => startChallenge(challenge.id)}>Start</Button>
+                    )}
+                    {challenge.status === "in_progress" && (
+                      <Button size="xs" variant="light" color="green" onClick={() => markChallengeAsCompleted(challenge.id)}>Complete</Button>
+                    )}
                     <Button size="xs" variant="light" onClick={() => handleEditClick(challenge.id, challenge.title)}>Edit</Button>
                     <Button size="xs" variant="light" color="red" onClick={() => deleteChallenge(challenge.id)}>Delete</Button>
                   </Group>
