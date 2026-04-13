@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { ChallengeContext } from "../components/ChallengeContext.jsx";
 import { CATEGORIES, DIFFICULTIES, TIME_COMMITMENTS, DEFAULT_CATEGORY, DEFAULT_DIFFICULTY, DEFAULT_TIME_COMMITMENT } from "../constants.js";
-import { TextInput, Select, Button, Group, Paper, Alert } from "@mantine/core";
+import { TextInput, Select, Button, Group, Paper } from "@mantine/core";
 
 const AddChallenge = () => {
   const { addChallenge } = useContext(ChallengeContext);
@@ -11,13 +11,20 @@ const AddChallenge = () => {
   const [timeCommitment, setTimeCommitment] = useState(DEFAULT_TIME_COMMITMENT);
   const [error, setError] = useState("");
 
+  const handleTitleChange = (e) => {
+    const value = e.currentTarget.value;
+    setTitle(value);
+    if (value.trim()) setError("");
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!title.trim()) {
+    const trimmed = title.trim();
+    if (!trimmed) {
       setError("Title can't be empty");
       return;
     }
-    addChallenge({ title, category, difficulty, timeCommitment });
+    addChallenge({ title: trimmed, category, difficulty, timeCommitment });
     setTitle("");
     setCategory(DEFAULT_CATEGORY);
     setDifficulty(DEFAULT_DIFFICULTY);
@@ -26,13 +33,13 @@ const AddChallenge = () => {
   };
 
   return (
-    <Paper shadow="xs" p="md" withBorder>
+    <Paper shadow="sm" p="md" radius="md" withBorder>
       <form onSubmit={handleSubmit}>
         <TextInput
           placeholder="Enter challenge title"
           value={title}
-          onChange={(e) => setTitle(e.currentTarget.value)}
-          error={error || undefined}
+          onChange={handleTitleChange}
+          error={error ? error : undefined}
           mb="sm"
         />
 
@@ -60,7 +67,11 @@ const AddChallenge = () => {
           />
         </Group>
 
-        <Button type="submit" fullWidth>Add Challenge</Button>
+        <Group justify={{ base: "stretch", sm: "flex-end" }} mt="xs">
+          <Button type="submit" w={{ base: "100%", sm: "auto" }}>
+            Add Challenge
+          </Button>
+        </Group>
       </form>
     </Paper>
   );

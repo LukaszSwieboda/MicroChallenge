@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect, useRef } from "react";
 import {
   DEFAULT_CATEGORY, DEFAULT_DIFFICULTY, DEFAULT_TIME_COMMITMENT, DEFAULT_CHALLENGE_STATUS,
   TIME_COMMITMENTS, CHALLENGE_STATUSES, DIFFICULTY_POINTS, TIME_COMMITMENT_MULTIPLIERS,
+  POINT_RANKS,
 } from "../constants.js";
 
 export const ChallengeContext = createContext();
@@ -25,6 +26,42 @@ export const calculatePoints = (difficulty, timeCommitment) => {
   const base = DIFFICULTY_POINTS[difficulty] || DIFFICULTY_POINTS.Easy;
   const mult = TIME_COMMITMENT_MULTIPLIERS[timeCommitment] || 1;
   return Math.round(base * mult);
+};
+
+const getRankIndex = (totalPoints) => {
+  let idx = 0;
+  for (let i = 0; i < POINT_RANKS.length; i++) {
+    if (totalPoints >= POINT_RANKS[i].minPoints) idx = i;
+  }
+  return idx;
+};
+
+export const getTotalPoints = (completedChallenges) =>
+  completedChallenges.reduce((sum, ch) => sum + (Number(ch.points) || 0), 0);
+
+export const getCurrentTitle = (totalPoints) => POINT_RANKS[getRankIndex(totalPoints)].title;
+
+/** Next rank threshold object { title, minPoints } or null at max rank */
+export const getNextTitle = (totalPoints) => {
+  const idx = getRankIndex(totalPoints);
+  return idx < POINT_RANKS.length - 1 ? POINT_RANKS[idx + 1] : null;
+};
+
+export const getPointsToNextTitle = (totalPoints) => {
+  const next = getNextTitle(totalPoints);
+  if (!next) return 0;
+  return Math.max(0, next.minPoints - totalPoints);
+};
+
+/** Progress within the current tier toward the next (0–1); 1 when at max rank */
+export const getMilestoneProgress = (totalPoints) => {
+  const idx = getRankIndex(totalPoints);
+  if (idx >= POINT_RANKS.length - 1) return 1;
+  const currentMin = POINT_RANKS[idx].minPoints;
+  const nextMin = POINT_RANKS[idx + 1].minPoints;
+  const span = nextMin - currentMin;
+  if (span <= 0) return 1;
+  return Math.min(1, Math.max(0, (totalPoints - currentMin) / span));
 };
 
 const migrateTimeCommitment = (ch) => {
@@ -104,6 +141,7 @@ export const ChallengeProvider = ({ children }) => {
     loadFromStorage(STORAGE_KEYS.COMPLETED)
   );
   const [drawMessage, setDrawMessage] = useState(null);
+  const [completionFeedback, setCompletionFeedback] = useState(null);
 
   useEffect(() => {
     if (isInitialMount.current) return;
@@ -185,12 +223,34 @@ export const ChallengeProvider = ({ children }) => {
     setDrawMessage(null);
   };
 
+  const clearCompletionFeedback = () => setCompletionFeedback(null);
+
   const markChallengeAsCompleted = (id) => {
     const targetId = id || (selectedChallenge && selectedChallenge.id);
     if (!targetId) return;
 
     const target = challengeList.find((ch) => ch.id === targetId);
     if (!target) return;
+
+    const pointsEarned = Number(target.points) || 0;
+    const prevTotal = getTotalPoints(completedChallenges);
+    const prevTitle = getCurrentTitle(prevTotal);
+    const newTotal = prevTotal + pointsEarned;
+    const nextRank = getNextTitle(newTotal);
+    const pointsToNext = getPointsToNextTitle(newTotal);
+    const newTitle = getCurrentTitle(newTotal);
+    const earnedNewRank = prevTitle !== newTitle;
+
+    setCompletionFeedback({
+      pointsEarned,
+      newTotalPoints: newTotal,
+      previousTitle: prevTitle,
+      currentTitle: newTitle,
+      newTitle,
+      earnedNewRank,
+      nextTitle: nextRank ? nextRank.title : null,
+      pointsToNext,
+    });
 
     setCompletedChallenges((prev) => {
       if (prev.some((ch) => ch.id === targetId)) return prev;
@@ -209,6 +269,8 @@ export const ChallengeProvider = ({ children }) => {
         challengeList,
         selectedChallenge,
         drawMessage,
+        completionFeedback,
+        clearCompletionFeedback,
         completedChallenges,
         addChallenge,
         editChallenge,
