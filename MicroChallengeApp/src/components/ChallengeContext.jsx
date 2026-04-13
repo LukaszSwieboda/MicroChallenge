@@ -1,5 +1,9 @@
 import React, { createContext, useState, useEffect, useRef } from "react";
-import { DEFAULT_CATEGORY, DEFAULT_DIFFICULTY, DEFAULT_TIME_COMMITMENT, TIME_COMMITMENTS } from "../constants.js";
+import {
+  DEFAULT_CATEGORY, DEFAULT_DIFFICULTY, DEFAULT_TIME_COMMITMENT, DEFAULT_CHALLENGE_STATUS,
+  TIME_COMMITMENTS, CHALLENGE_STATUSES, DIFFICULTY_POINTS, TIME_COMMITMENT_MULTIPLIERS,
+  POINT_RANKS,
+} from "../constants.js";
 
 export const ChallengeContext = createContext();
 
@@ -18,6 +22,48 @@ const generateId = () => {
   });
 };
 
+export const calculatePoints = (difficulty, timeCommitment) => {
+  const base = DIFFICULTY_POINTS[difficulty] || DIFFICULTY_POINTS.Easy;
+  const mult = TIME_COMMITMENT_MULTIPLIERS[timeCommitment] || 1;
+  return Math.round(base * mult);
+};
+
+const getRankIndex = (totalPoints) => {
+  let idx = 0;
+  for (let i = 0; i < POINT_RANKS.length; i++) {
+    if (totalPoints >= POINT_RANKS[i].minPoints) idx = i;
+  }
+  return idx;
+};
+
+export const getTotalPoints = (completedChallenges) =>
+  completedChallenges.reduce((sum, ch) => sum + (Number(ch.points) || 0), 0);
+
+export const getCurrentTitle = (totalPoints) => POINT_RANKS[getRankIndex(totalPoints)].title;
+
+/** Next rank threshold object { title, minPoints } or null at max rank */
+export const getNextTitle = (totalPoints) => {
+  const idx = getRankIndex(totalPoints);
+  return idx < POINT_RANKS.length - 1 ? POINT_RANKS[idx + 1] : null;
+};
+
+export const getPointsToNextTitle = (totalPoints) => {
+  const next = getNextTitle(totalPoints);
+  if (!next) return 0;
+  return Math.max(0, next.minPoints - totalPoints);
+};
+
+/** Progress within the current tier toward the next (0–1); 1 when at max rank */
+export const getMilestoneProgress = (totalPoints) => {
+  const idx = getRankIndex(totalPoints);
+  if (idx >= POINT_RANKS.length - 1) return 1;
+  const currentMin = POINT_RANKS[idx].minPoints;
+  const nextMin = POINT_RANKS[idx + 1].minPoints;
+  const span = nextMin - currentMin;
+  if (span <= 0) return 1;
+  return Math.min(1, Math.max(0, (totalPoints - currentMin) / span));
+};
+
 const migrateTimeCommitment = (ch) => {
   if (ch.timeCommitment && TIME_COMMITMENTS.includes(ch.timeCommitment)) {
     return ch.timeCommitment;
@@ -30,16 +76,31 @@ const migrateTimeCommitment = (ch) => {
   return "Full day";
 };
 
-const migrateChallenge = (ch) => ({
-  id: ch.id || generateId(),
-  title: ch.title || ch.name || "Untitled",
-  category: ch.category || DEFAULT_CATEGORY,
-  difficulty: ch.difficulty || DEFAULT_DIFFICULTY,
-  timeCommitment: migrateTimeCommitment(ch),
-  done: ch.done ?? false,
-  createdAt: ch.createdAt || new Date().toISOString(),
-  ...(ch.completedAt ? { completedAt: ch.completedAt } : {}),
-});
+const inferStatus = (ch) => {
+  if (CHALLENGE_STATUSES.includes(ch.status)) return ch.status;
+  if (ch.done === true || ch.completedAt) return "completed";
+  if (ch.startedAt) return "in_progress";
+  return DEFAULT_CHALLENGE_STATUS;
+};
+
+const migrateChallenge = (ch) => {
+  const difficulty = ch.difficulty || DEFAULT_DIFFICULTY;
+  const timeCommitment = migrateTimeCommitment(ch);
+  const status = inferStatus(ch);
+  return {
+    id: ch.id || generateId(),
+    title: ch.title || ch.name || "Untitled",
+    category: ch.category || DEFAULT_CATEGORY,
+    difficulty,
+    timeCommitment,
+    status,
+    points: typeof ch.points === "number" && Number.isFinite(ch.points) ? ch.points : calculatePoints(difficulty, timeCommitment),
+    startedAt: ch.startedAt || (status !== "planned" ? ch.createdAt || null : null),
+    done: ch.done ?? false,
+    createdAt: ch.createdAt || new Date().toISOString(),
+    ...(ch.completedAt ? { completedAt: ch.completedAt } : {}),
+  };
+};
 
 const saveToStorage = (key, value) => {
   try {
@@ -80,6 +141,7 @@ export const ChallengeProvider = ({ children }) => {
     loadFromStorage(STORAGE_KEYS.COMPLETED)
   );
   const [drawMessage, setDrawMessage] = useState(null);
+  const [completionFeedback, setCompletionFeedback] = useState(null);
 
   useEffect(() => {
     if (isInitialMount.current) return;
@@ -97,14 +159,19 @@ export const ChallengeProvider = ({ children }) => {
 
   const addChallenge = ({ title, category, difficulty, timeCommitment }) => {
     if (!title.trim()) return;
+    const diff = difficulty || DEFAULT_DIFFICULTY;
+    const tc = TIME_COMMITMENTS.includes(timeCommitment) ? timeCommitment : DEFAULT_TIME_COMMITMENT;
     setChallengeList((prev) => [
       ...prev,
       {
         id: generateId(),
         title: title.trim(),
         category: category || DEFAULT_CATEGORY,
-        difficulty: difficulty || DEFAULT_DIFFICULTY,
-        timeCommitment: TIME_COMMITMENTS.includes(timeCommitment) ? timeCommitment : DEFAULT_TIME_COMMITMENT,
+        difficulty: diff,
+        timeCommitment: tc,
+        status: DEFAULT_CHALLENGE_STATUS,
+        points: calculatePoints(diff, tc),
+        startedAt: null,
         done: false,
         createdAt: new Date().toISOString(),
       },
@@ -127,27 +194,73 @@ export const ChallengeProvider = ({ children }) => {
     }
   };
 
+  const startChallenge = (id) => {
+    setChallengeList((prev) =>
+      prev.map((ch) =>
+        ch.id === id
+          ? { ...ch, status: "in_progress", startedAt: ch.startedAt || new Date().toISOString() }
+          : ch
+      )
+    );
+    if (selectedChallenge && selectedChallenge.id === id) {
+      setSelectedChallenge((prev) => ({
+        ...prev,
+        status: "in_progress",
+        startedAt: prev.startedAt || new Date().toISOString(),
+      }));
+    }
+  };
+
   const drawNewChallenge = () => {
-    if (challengeList.length === 0) {
+    const planned = challengeList.filter((ch) => ch.status === "planned");
+    if (planned.length === 0) {
       setSelectedChallenge(null);
-      setDrawMessage("No challenges to draw!");
+      setDrawMessage("No planned challenges to draw!");
       return;
     }
-    const randomIndex = Math.floor(Math.random() * challengeList.length);
-    setSelectedChallenge(challengeList[randomIndex]);
+    const randomIndex = Math.floor(Math.random() * planned.length);
+    setSelectedChallenge(planned[randomIndex]);
     setDrawMessage(null);
   };
 
-  const markChallengeAsCompleted = () => {
-    if (!selectedChallenge) return;
-    setCompletedChallenges((prev) => [
-      ...prev,
-      { ...selectedChallenge, done: true, completedAt: new Date().toISOString() },
-    ]);
-    setChallengeList((prev) =>
-      prev.filter((ch) => ch.id !== selectedChallenge.id)
-    );
-    setSelectedChallenge(null);
+  const clearCompletionFeedback = () => setCompletionFeedback(null);
+
+  const markChallengeAsCompleted = (id) => {
+    const targetId = id || (selectedChallenge && selectedChallenge.id);
+    if (!targetId) return;
+
+    const target = challengeList.find((ch) => ch.id === targetId);
+    if (!target) return;
+
+    const pointsEarned = Number(target.points) || 0;
+    const prevTotal = getTotalPoints(completedChallenges);
+    const prevTitle = getCurrentTitle(prevTotal);
+    const newTotal = prevTotal + pointsEarned;
+    const nextRank = getNextTitle(newTotal);
+    const pointsToNext = getPointsToNextTitle(newTotal);
+    const newTitle = getCurrentTitle(newTotal);
+    const earnedNewRank = prevTitle !== newTitle;
+
+    setCompletionFeedback({
+      pointsEarned,
+      newTotalPoints: newTotal,
+      previousTitle: prevTitle,
+      currentTitle: newTitle,
+      newTitle,
+      earnedNewRank,
+      nextTitle: nextRank ? nextRank.title : null,
+      pointsToNext,
+    });
+
+    setCompletedChallenges((prev) => {
+      if (prev.some((ch) => ch.id === targetId)) return prev;
+      return [...prev, { ...target, status: "completed", done: true, completedAt: new Date().toISOString() }];
+    });
+    setChallengeList((prev) => prev.filter((ch) => ch.id !== targetId));
+
+    if (selectedChallenge && selectedChallenge.id === targetId) {
+      setSelectedChallenge(null);
+    }
   };
 
   return (
@@ -156,10 +269,13 @@ export const ChallengeProvider = ({ children }) => {
         challengeList,
         selectedChallenge,
         drawMessage,
+        completionFeedback,
+        clearCompletionFeedback,
         completedChallenges,
         addChallenge,
         editChallenge,
         deleteChallenge,
+        startChallenge,
         drawNewChallenge,
         markChallengeAsCompleted,
       }}
